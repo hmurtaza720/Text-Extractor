@@ -137,9 +137,11 @@ def get_document(doc_id: int, current_user: models.User = Depends(get_current_ac
         raise HTTPException(status_code=404, detail="Document not found")
     return doc
 
+from typing import Optional
+
 class DocumentUpdate(BaseModel):
-    corrected_html: str | None = None
-    filename: str | None = None
+    corrected_html: Optional[str] = None
+    filename: Optional[str] = None
 
 @app.put("/documents/{doc_id}", response_model=schemas.DocumentResponse)
 def update_document(doc_id: int, update_data: DocumentUpdate, current_user: models.User = Depends(get_current_active_user), db: Session = Depends(database.get_db)):
@@ -339,7 +341,7 @@ def export_docx(doc_id: int, current_user: models.User = Depends(get_current_act
 class N8NCallback(BaseModel):
     doc_id: int
     raw_text: str
-    corrected_html: str | None = None
+    corrected_html: Optional[str] = None
     status: str = "Ready"
 
 @app.post("/n8n/callback")
