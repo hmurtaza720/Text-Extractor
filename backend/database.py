@@ -7,14 +7,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # MySQL Connection Details
-# Replace with your actual MySQL credentials or use environment variables
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "mysql+mysqlconnector://root:@localhost:3308/text_extractor")
-
-# Using SQLite for local development to ensure the app runs immediately without MySQL setup
-# SQLALCHEMY_DATABASE_URL = "sqlite:///./text_extractor.db"
+# SQLite Connection (Default for Cloud/Demo)
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./text_extractor.db")
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
