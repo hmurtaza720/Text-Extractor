@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor - TextExtract</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Quill CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lato&family=Merriweather&family=Montserrat&family=Open+Sans&family=Oswald&family=Playfair+Display&family=Raleway&family=Roboto&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { 'primary-green': '#4A997A' },
+                    animation: {
+                        blob: "float 20s ease-in-out infinite both alternate",
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'none' },
+                            '50%': { transform: 'translate(50%, 20%) rotateY(10deg) scale(1.2)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .split-pane {
+            height: calc(100vh - 4rem);
+        }
+
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .glass-header {
+            background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Page View Styling */
+        #editor-wrapper {
+            background-color: transparent;
+            padding: 2rem;
+            /* Smooth scrolling */
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+
+        #editor-container {
+            background-color: white;
+            width: 210mm;
+            min-height: 297mm;
+            /* Keep min-height for look */
+            height: auto;
+            /* Allow growth */
+            margin-bottom: 4rem;
+            /* Extra space at bottom */
+            position: relative;
+            transform-origin: top center;
+            transition: transform 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            /* Remove overflow hidden to prevent clipping */
+            /* overflow: hidden; */
+        }
+
+        /* Remove default Quill border */
+        .ql-container.ql-snow {
+            border: none;
+            height: auto;
+        }
+
+        /* The Editor Content Area */
+        .ql-editor {
+            height: auto;
+            /* changed from 100% */
+            min-height: 297mm;
+            overflow-y: visible;
+            /* text should now show */
+            padding-bottom: 4rem;
+            /* extra padding inside */
+
+            background-color: white;
+
+            /* Logic for "endless" with subtle page markers */
+            background-image: linear-gradient(to bottom,
+                    transparent 296.5mm,
+                    #e5e7eb 296.5mm,
+                    #e5e7eb 297mm);
+
+            background-size: 100% 297mm;
+            background-repeat: repeat-y;
+            background-attachment: local;
+        }
+
+        /* Optional: Add a "Page Break" label that appears on hover? No, User just wants line. */
+
+        /* Toolbar Styling for Glass Header */
+        .ql-toolbar.ql-snow {
+            border: none;
+            background: transparent;
+            z-index: 10;
+            padding: 8px;
+        }
+
+        .ql-snow .ql-picker {
+            color: #374151;
+        }
+
+        .ql-snow .ql-stroke {
+            stroke: #374151;
+        }
+
+        .ql-snow .ql-fill {
+            fill: #374151;
+        }
+
+        /* Font mappings */
+        .ql-font-arial {
+            font-family: 'Arial', sans-serif;
+        }
+
+        .ql-font-times-new-roman {
+            font-family: 'Times New Roman', serif;
+        }
+
+        .ql-font-courier-new {
+            font-family: 'Courier New', monospace;
+        }
+
+        .ql-font-georgia {
+            font-family: 'Georgia', serif;
+        }
+
+        .ql-font-trebuchet-ms {
+            font-family: 'Trebuchet MS', sans-serif;
+        }
+
+        .ql-font-verdana {
+            font-family: 'Verdana', sans-serif;
+        }
+
+        .ql-font-roboto {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .ql-font-open-sans {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .ql-font-lato {
+            font-family: 'Lato', sans-serif;
+        }
+
+        .ql-font-montserrat {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .ql-font-raleway {
+            font-family: 'Raleway', sans-serif;
+        }
+
+        .ql-font-merriweather {
+            font-family: 'Merriweather', serif;
+        }
+
+        .ql-font-playfair-display {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .ql-snow .ql-picker.ql-font .ql-picker-label::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item::before {
+            content: 'Sans Serif';
+        }
+
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="arial"]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="arial"]::before {
+            content: 'Arial';
+            font-family: 'Arial';
+        }
+    </style>
+</head>
+
+<body class="bg-gray-200 h-screen flex overflow-hidden relative">
+
+    <!-- Animated Background Globs -->
+    <div
+        class="absolute top-20 left-2 w-[500px] h-[500px] bg-[#B3C9C2] rounded-full mix-blend-multiply filter blur-[150px] opacity-50 animate-blob pointer-events-none">
+    </div>
+    <div
+        class="absolute top-20 right-32 w-[500px] h-[500px] bg-[#A3BFC9] rounded-full mix-blend-multiply filter blur-[150px] opacity-50 animate-blob animation-delay-2000 pointer-events-none">
+    </div>
+    <div
+        class="hidden xl:block absolute bottom-10 left-32 w-[500px] h-[500px] bg-[#809090] rounded-full mix-blend-multiply filter blur-[150px] opacity-50 animate-blob animation-delay-4000 pointer-events-none">
+    </div>
+
+    <!-- Modern Floating Sidebar with Document List -->
+    <aside class="hidden md:flex flex-col w-72 z-20 p-4 h-full">
+        <div class="h-full flex flex-col glass-panel rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Brand -->
+            <div class="h-20 flex-shrink-0 flex items-center px-8 border-b border-white/10">
+                <div class="flex items-center space-x-3">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-primary-green to-teal-400 rounded-lg shadow flex items-center justify-center text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-800 tracking-tight">TextExtract</span>
+                </div>
+            </div>
+
+            <!-- Enhanced Navigation / Doc List -->
+            <nav class="flex-1 flex flex-col min-h-0 px-4 py-4 space-y-2">
+
+                <!-- Back to Dashboard -->
+                <a href="/dashboard"
+                    class="flex-shrink-0 flex items-center px-4 py-3 text-gray-600 hover:bg-white/30 hover:text-gray-800 rounded-xl transition-all border border-transparent hover:border-white/20 group">
+                    <svg class="w-5 h-5 mr-3 text-gray-400 group-hover:text-primary-green transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+
+                <!-- Document Switcher Section -->
+                <div class="flex-1 flex flex-col min-h-0 bg-white/20 rounded-xl p-3 border border-white/20">
+                    <div class="flex items-center justify-between mb-2 px-1">
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Documents</span>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="relative mb-3">
+                        <input type="text" id="doc-search" placeholder="Search..."
+                            onkeyup="filterSidebarDocs(this.value)"
+                            class="w-full pl-8 pr-3 py-2 text-sm bg-white/50 border border-white/30 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-green placeholder-gray-400">
+                        <svg class="w-4 h-4 text-gray-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+
+                    <!-- List -->
+                    <div id="sidebar-doc-list" class="flex-1 overflow-y-auto space-y-1 custom-scrollbar pr-1">
+                        <div class="text-center mt-4 text-xs text-gray-400">Loading...</div>
+                    </div>
+                </div>
+
+                <!-- Settings Link -->
+                <a href="/settings"
+                    class="flex-shrink-0 flex items-center px-4 py-3 text-gray-600 hover:bg-white/30 hover:text-gray-800 rounded-xl transition-all border border-transparent hover:border-white/20 group">
+                    <svg class="w-5 h-5 mr-3 text-gray-400 group-hover:text-primary-green transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span class="font-medium">Settings</span>
+                </a>
+            </nav>
+
+            <!-- Profile Info -->
+            <div class="px-4 pb-4 flex-shrink-0">
+                <div class="glass-panel p-4 rounded-xl border border-white/30 bg-white/20">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <img id="sidebar-profile-img" src="https://ui-avatars.com/api/?name=User&background=random"
+                            alt="Profile" class="w-10 h-10 rounded-full shadow-md border-2 border-white/50" />
+                        <div>
+                            <div class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Welcome</div>
+                            <div id="sidebar-user-name" class="text-sm font-bold text-gray-800 truncate max-w-[120px]">
+                                Loading...</div>
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()"
+                        class="w-full py-2 text-xs font-bold text-white bg-red-400/80 hover:bg-red-500/90 rounded-lg shadow-sm transition-all flex items-center justify-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                            </path>
+                        </svg>
+                        <span>Sign Out</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Editor Content (Split View) -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative z-10 h-screen">
+
+        <!-- Header (Glass) -->
+        <div class="glass-header z-20 flex flex-col">
+            <!-- Main Toolbar Row -->
+            <div class="flex items-center justify-between px-4 h-16">
+                <div class="flex items-center space-x-4">
+                    <!-- Mobile Hamburger -->
+                    <a href="/dashboard" class="md:hidden text-gray-600 hover:text-gray-800">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </a>
+                    <!-- Back Button Desktop -->
+                    <a href="/dashboard"
+                        class="hidden md:flex items-center text-gray-500 hover:text-primary-green transition">
+                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                            </path>
+                        </svg>
+                        <span class="text-sm font-medium">Back</span>
+                    </a>
+
+                    <div class="h-6 w-px bg-gray-300 mx-2"></div>
+
+                    <!-- File Name Input -->
+                    <input type="text" id="doc-title" value="Untitled Document"
+                        class="bg-transparent border-b border-transparent hover:border-gray-300 focus:border-primary-green focus:outline-none text-gray-800 font-semibold px-2 py-1 transition flex-1 w-24 sm:w-64 truncate text-sm sm:text-base">
+                    <span id="save-status"
+                        class="text-xs text-gray-400 italic min-w-[40px] hidden sm:block">Saved</span>
+
+                    <div class="h-6 w-px bg-gray-300 mx-2 hidden sm:block"></div>
+                    <!-- Page Status -->
+                    <div id="page-status" class="text-xs text-gray-500 font-medium hidden sm:block">Page 1</div>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <button onclick="saveDocument()"
+                        class="flex items-center px-3 py-1.5 bg-primary-green hover:bg-green-700 text-white text-xs sm:text-sm font-medium rounded-lg shadow-sm transition">
+                        <svg class="w-4 h-4 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12">
+                            </path>
+                        </svg>
+                        <span class="hidden sm:inline">Save</span>
+                    </button>
+                    <div class="flex space-x-2">
+                        <button onclick="exportDoc('pdf')"
+                            class="flex items-center px-3 py-2 bg-red-500/80 hover:bg-red-600 text-white text-xs font-medium rounded-lg shadow-sm transition"
+                            title="Export as PDF">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            PDF
+                        </button>
+                        <button onclick="exportDoc('docx')"
+                            class="flex items-center px-3 py-2 bg-blue-500/80 hover:bg-blue-600 text-white text-xs font-medium rounded-lg shadow-sm transition"
+                            title="Export as Word">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                </path>
+                            </svg>
+                            DOCX
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Controls Row (Hidden on Mobile) -->
+            <div
+                class="hidden md:flex px-4 py-1 border-t border-white/20 bg-white/30 items-center justify-between h-10">
+                <div class="flex items-center space-x-4 text-xs text-gray-700 font-medium">
+                    <div class="flex items-center space-x-2">
+                        <label>Zoom:</label>
+                        <input type="range" min="50" max="150" value="100"
+                            class="h-2 w-20 rounded-lg appearance-none cursor-pointer bg-gray-300"
+                            oninput="changeZoom(this.value)">
+                    </div>
+                    <div class="h-4 w-px bg-gray-300 mx-1"></div>
+                    <div class="flex items-center space-x-2">
+                        <label>Page Size:</label>
+                        <select onchange="changePageSize(this.value)"
+                            class="border border-gray-300 rounded px-1 bg-white/70 focus:outline-none hover:border-gray-400 transition cursor-pointer h-6 text-xs">
+                            <option value="a4">A4</option>
+                            <option value="a5">A5</option>
+                            <option value="letter">Letter</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label>Margin:</label>
+                        <select onchange="changeMargin(this.value)"
+                            class="border border-gray-300 rounded px-1 bg-white/70 focus:outline-none hover:border-gray-400 transition cursor-pointer h-6 text-xs">
+                            <option value="normal">Normal</option>
+                            <option value="narrow">Narrow</option>
+                            <option value="wide">Wide</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Toolbar Container for Quill -->
+                <div id="toolbar-container" class="flex-1 flex justify-end"></div>
+            </div>
+        </div>
+
+        <!-- Split Pane Layout -->
+        <div class="flex-1 flex overflow-hidden">
+            <!-- Left Pane: Source View (PDF/Image) -->
+            <div id="source-pane"
+                class="w-1/2 border-r border-white/30 flex flex-col bg-gray-100/50 backdrop-blur-sm relative glass-panel ml-4 my-4 rounded-xl overflow-hidden hidden md:flex">
+                <div class="h-8 bg-gray-200/80 border-b border-white/20 flex items-center justify-between px-3">
+                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Original Source</span>
+                    <button class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex-1 overflow-auto p-4 flex items-center justify-center bg-gray-500/10"
+                    id="source-container">
+                    <!-- Image or PDF will be injected here -->
+                    <div class="text-gray-400 flex flex-col items-center">
+                        <svg class="w-12 h-12 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        <span class="text-sm">Loading Source...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Pane: Editor -->
+            <div id="editor-wrapper" class="flex-1 flex justify-center overflow-y-auto p-8 relative">
+                <div id="editor-container" class="transition-transform duration-200 origin-top"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_URL = "";
+        // Global variables
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentDocId = urlParams.get('id');
+        const token = localStorage.getItem('token');
+        let allDocuments = []; // Store fetched docs for filtering
+        let pageHeightPx = 1122; // Approx 297mm in px (297 * 3.78)
+
+        if (!token) window.location.href = '/';
+        if (!currentDocId) {
+            alert("No document specified");
+            window.location.href = '/dashboard';
+        }
+
+        // --- Quill Configuration ---
+        const Font = Quill.import('formats/font');
+        Font.whitelist = ['arial', 'times-new-roman', 'courier-new', 'georgia', 'trebuchet-ms', 'verdana', 'roboto', 'open-sans', 'lato', 'montserrat', 'raleway', 'merriweather', 'playfair-display'];
+        Quill.register(Font, true);
+
+        const Size = Quill.import('attributors/style/size');
+        Size.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '30px', '32px', '36px'];
+        Quill.register(Size, true);
+
+        const quill = new Quill('#editor-container', {
+            theme: 'snow',
+            modules: {
+                imageResize: { displaySize: true },
+                toolbar: {
+                    container: [
+                        [{ 'font': Font.whitelist }],
+                        [{ 'size': Size.whitelist }],
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        [{ 'align': [] }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        ['image', 'link', 'clean']
+                    ]
+                }
+            }
+        });
+
+        // Move Toolbar
+        const toolbarContainer = document.getElementById('toolbar-container');
+        const quillToolbar = document.querySelector('.ql-toolbar');
+        if (toolbarContainer && quillToolbar) {
+            toolbarContainer.appendChild(quillToolbar);
+        }
+
+        // --- Core Functions ---
+
+        async function fetchDocument(id = currentDocId) {
+            if (!id) return;
+            currentDocId = id;
+
+            // Update URL without reload
+            const newUrl = `${window.location.pathname}?id=${id}`;
+            window.history.pushState({ path: newUrl }, '', newUrl);
+
+            try {
+                const response = await fetch(`${API_URL}/documents/${id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.status === 401) handleLogout();
+                if (!response.ok) throw new Error("Failed to load document");
+
+                const doc = await response.json();
+
+                document.getElementById('doc-title').value = doc.filename || "Untitled";
+
+                if (doc.corrected_html) {
+                    quill.clipboard.dangerouslyPasteHTML(doc.corrected_html);
+                } else if (doc.raw_text) {
+                    quill.setText(doc.raw_text);
+                } else {
+                    if (quill.getText().trim().length === 0) quill.setText('');
+                }
+
+                const sourceContainer = document.getElementById('source-container');
+                if (doc.original_path) {
+                    const ext = doc.original_path.split('.').pop().toLowerCase();
+                    if (['jpg', 'jpeg', 'png', 'bmp', 'webp'].includes(ext)) {
+                        sourceContainer.innerHTML = `<img src="${API_URL}/${doc.original_path}" class="max-w-full h-auto shadow-lg rounded" alt="Original Source">`;
+                    } else if (ext === 'pdf') {
+                        sourceContainer.innerHTML = `<iframe src="${API_URL}/${doc.original_path}" class="w-full h-full border-none" title="PDF Source"></iframe>`;
+                    } else {
+                        sourceContainer.innerHTML = `<div class="text-center p-4"><span class="text-gray-500">Preview not available for .${ext} files</span><br/><a href="${API_URL}/${doc.original_path}" target="_blank" class="text-primary-green underline mt-2 inline-block">Download File</a></div>`;
+                    }
+                } else {
+                    sourceContainer.innerHTML = `<div class="text-gray-400">No source file found.</div>`;
+                }
+
+                renderSidebarDocs();
+                updatePageCounter();
+
+            } catch (error) {
+                console.error(error);
+                alert("Error loading document");
+            }
+        }
+
+        async function fetchAllDocuments() {
+            try {
+                const response = await fetch(`${API_URL}/documents`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    allDocuments = await response.json();
+                    renderSidebarDocs();
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function renderSidebarDocs(filterText = "") {
+            const listContainer = document.getElementById('sidebar-doc-list');
+            listContainer.innerHTML = "";
+
+            const filtered = allDocuments.filter(doc =>
+                (doc.filename || "Untitled").toLowerCase().includes(filterText.toLowerCase())
+            );
+
+            if (filtered.length === 0) {
+                listContainer.innerHTML = `<div class="text-xs text-gray-400 text-center py-2">No docs found</div>`;
+                return;
+            }
+
+            filtered.forEach(doc => {
+                const isActive = doc.id == currentDocId;
+                const div = document.createElement('div');
+                div.className = `p-2 rounded-lg cursor-pointer text-sm font-medium transition-colors flex items-center ${isActive ? 'bg-primary-green/20 text-green-900 border border-primary-green/30' : 'hover:bg-white/40 text-gray-700 border border-transparent'}`;
+                div.onclick = () => fetchDocument(doc.id);
+
+                div.innerHTML = `
+                    <svg class="w-4 h-4 mr-2 ${isActive ? 'text-primary-green' : 'text-gray-400'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span class="truncate">${doc.filename || "Untitled"}</span>
+                `;
+                listContainer.appendChild(div);
+            });
+        }
+
+        function filterSidebarDocs(val) {
+            renderSidebarDocs(val);
+        }
+
+        async function fetchUserProfile() {
+            try {
+                const response = await fetch(`${API_URL}/users/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const user = await response.json();
+                    const sidebarName = document.getElementById('sidebar-user-name');
+                    const sidebarImg = document.getElementById('sidebar-profile-img');
+
+                    if (sidebarName) sidebarName.textContent = user.username;
+                    if (sidebarImg) {
+                        const encodedName = encodeURIComponent(user.username);
+                        sidebarImg.src = `https://ui-avatars.com/api/?name=${encodedName}&background=random&color=fff`;
+                    }
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function saveDocument() {
+            const statusSpan = document.getElementById('save-status');
+            statusSpan.textContent = "Saving...";
+
+            const htmlContent = quill.root.innerHTML;
+            const title = document.getElementById('doc-title').value;
+
+            try {
+                const response = await fetch(`${API_URL}/documents/${currentDocId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        corrected_html: htmlContent,
+                        filename: title
+                    })
+                });
+
+                if (response.ok) {
+                    statusSpan.textContent = "Saved";
+                    setTimeout(() => { statusSpan.textContent = "Saved"; }, 2000);
+                    // fetchAllDocuments(); // Optimization: Don't refresh list on every save
+                } else {
+                    statusSpan.textContent = "Error";
+                }
+            } catch (error) {
+                console.error(error);
+                statusSpan.textContent = "Error";
+            }
+        }
+
+        // Simple scroll based pagination counter
+        function updatePageCounter() {
+            const editorContent = document.querySelector('.ql-editor');
+            const scrollTop = document.getElementById('editor-wrapper').scrollTop;
+            const currentPage = Math.floor(scrollTop / pageHeightPx) + 1;
+            // Also estimate total pages based on scrollHeight
+            const totalPages = Math.floor(editorContent.scrollHeight / pageHeightPx) + 1;
+
+            document.getElementById('page-status').textContent = `Page ${currentPage} of ${totalPages}`;
+        }
+
+        // Auto-save & Resize logic
+        let timeoutId;
+        quill.on('text-change', () => {
+            document.getElementById('save-status').textContent = "Unsaved changes...";
+            clearTimeout(timeoutId);
+
+            updatePageCounter();
+
+            timeoutId = setTimeout(() => {
+                saveDocument();
+            }, 2000);
+        });
+
+        document.getElementById('editor-wrapper').addEventListener('scroll', updatePageCounter);
+
+
+        function changePageSize(size) {
+            const container = document.getElementById('editor-container');
+            const editor = document.querySelector('.ql-editor');
+
+            if (size === 'a4') {
+                container.style.width = '210mm';
+                pageHeightPx = 1122; // 297mm
+                // Reset Gradient for A4
+                editor.style.backgroundImage = 'linear-gradient(to bottom, transparent 296.5mm, #9ca3af 296.5mm, #9ca3af 297mm)';
+                editor.style.backgroundSize = '100% 297mm';
+            } else if (size === 'a5') {
+                container.style.width = '148mm';
+                pageHeightPx = 794; // 210mm
+                editor.style.backgroundImage = 'linear-gradient(to bottom, transparent 209.5mm, #9ca3af 209.5mm, #9ca3af 210mm)';
+                editor.style.backgroundSize = '100% 210mm';
+            } else if (size === 'letter') {
+                container.style.width = '216mm';
+                pageHeightPx = 1054; // 279mm
+                editor.style.backgroundImage = 'linear-gradient(to bottom, transparent 278.5mm, #9ca3af 278.5mm, #9ca3af 279mm)';
+                editor.style.backgroundSize = '100% 279mm';
+            }
+            updatePageCounter();
+        }
+
+        function changeMargin(type) {
+            const editor = document.querySelector('.ql-editor');
+            if (type === 'normal') editor.style.padding = '2rem';
+            if (type === 'narrow') editor.style.padding = '1rem';
+            if (type === 'wide') editor.style.padding = '3rem';
+        }
+
+        function changeZoom(val) {
+            const container = document.getElementById('editor-container');
+            container.style.transform = `scale(${val / 100})`;
+        }
+
+        function exportDoc(type) {
+            if (!currentDocId) return;
+            // Use token for auth if needed, but for simple download anchor, we rely on cookie or need a way to pass token if API is secured.
+            // Wait, API is secured with Bearer token. Standard <a> link won't send header.
+            // We need to fetch blob and download.
+
+            const statusSpan = document.getElementById('save-status');
+            statusSpan.textContent = `Exporting ${type.toUpperCase()}...`;
+
+            fetch(`${API_URL}/export/${currentDocId}/${type}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+                .then(resp => {
+                    if (resp.ok) return resp.blob();
+                    throw new Error('Export failed');
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    // Filename suggestion
+                    const title = document.getElementById('doc-title').value || "document";
+                    a.download = `${title}.${type}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    statusSpan.textContent = "Exported";
+                    setTimeout(() => { statusSpan.textContent = "Saved"; }, 2000);
+                })
+                .catch(err => {
+                    console.error(err);
+                    statusSpan.textContent = "Export Error";
+                });
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('token');
+            window.location.href = '/';
+        }
+
+        // Init
+        fetchDocument();
+        fetchUserProfile();
+        fetchAllDocuments();
+
+    </script>
+</body>
+
+</html>

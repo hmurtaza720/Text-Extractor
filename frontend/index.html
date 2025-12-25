@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Signup</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <!-- Custom Tailwind Config and Animation Definition -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        // Updated to a deeper, more muted green that pairs well with grey tones
+                        'primary-green': '#4A997A',
+                    },
+                    animation: {
+                        // User-provided animation name
+                        blob: "float 20s ease-in-out infinite both alternate",
+                    },
+                    keyframes: {
+                        // User-provided keyframes
+                        float: {
+                            '0%, 100%': {
+                                transform: 'none'
+                            },
+                            '50%': {
+                                transform: 'translate(50%, 20%) rotateY(10deg) scale(1.2)'
+                            }
+                        },
+                    },
+                },
+            }
+        }
+    </script>
+
+    <!-- Custom CSS for animation delays (simulating the @layer utilities) -->
+    <style>
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+
+        .form-card {
+            /* The blur effect will be applied directly via Tailwind classes in the HTML */
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="font-sans">
+
+    <!-- Changed main background to a noticeable grey (bg-gray-200) -->
+    <!-- Changed main background to a noticeable grey (bg-gray-200) -->
+    <div class="relative min-h-screen bg-gray-200 overflow-x-hidden smooth-scroll">
+
+        <!-- Animated Blob Background Elements - Updated colors with mobile sizing -->
+        <div
+            class="absolute top-20 left-2 w-64 h-64 md:w-[500px] md:h-[500px] bg-[#B3C9C2] rounded-full mix-blend-multiply filter blur-[80px] md:blur-[150px] opacity-50 animate-blob">
+        </div>
+        <div
+            class="absolute top-20 right-32 w-64 h-64 md:w-[500px] md:h-[500px] bg-[#A3BFC9] rounded-full mix-blend-multiply filter blur-[80px] md:blur-[150px] opacity-50 animate-blob animation-delay-2000">
+        </div>
+        <div
+            class="hidden xl:block absolute bottom-10 left-32 w-[500px] h-[500px] bg-[#809090] rounded-full mix-blend-multiply filter blur-[150px] opacity-50 animate-blob animation-delay-4000">
+        </div>
+        <div
+            class="absolute bottom-10 right-52 w-64 h-64 md:w-[500px] md:h-[500px] bg-[#A3BFC9] rounded-full mix-blend-multiply filter blur-[80px] md:blur-[150px] opacity-50 animate-blob animation-delay-4000">
+        </div>
+
+        <!-- Centered Content Area -->
+        <div class="relative z-10 flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+
+            <div class="sm:mx-auto sm:w-full sm:max-w-md">
+                <h1 class="text-center text-3xl sm:text-4xl font-extrabold text-gray-800 tracking-tight mb-2">
+                    Welcome Back
+                </h1>
+                <h2 id="form-title"
+                    class="mt-2 text-center text-xl sm:text-2xl font-semibold tracking-tight text-gray-700">
+                    Sign in to your account
+                </h2>
+            </div>
+
+            <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+
+                <!-- Login Form View - Transparency: bg-white/50, Blur: backdrop-blur-lg -->
+                <div id="login-view"
+                    class="bg-white/50 backdrop-blur-lg py-8 px-4 shadow-2xl rounded-xl sm:px-10 form-card">
+                    <form class="space-y-6" action="#" method="POST"
+                        onsubmit="event.preventDefault(); handleAuth('login');">
+                        <div>
+                            <label for="login-email" class="block text-sm font-medium text-gray-700">Email
+                                address</label>
+                            <div class="mt-1">
+                                <input id="login-email" name="email" type="email" autocomplete="email" required=""
+                                    class="block w-full rounded-lg border border-gray-300 px-4 py-2 placeholder-gray-400 shadow-sm focus:border-primary-green focus:outline-none focus:ring-primary-green sm:text-sm transition duration-150">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="login-password" class="block text-sm font-medium text-gray-700">Password</label>
+                            <div class="mt-1">
+                                <input id="login-password" name="password" type="password"
+                                    autocomplete="current-password" required=""
+                                    class="block w-full rounded-lg border border-gray-300 px-4 py-2 placeholder-gray-400 shadow-sm focus:border-primary-green focus:outline-none focus:ring-primary-green sm:text-sm transition duration-150">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <input id="remember-me" name="remember-me" type="checkbox"
+                                    class="h-4 w-4 rounded border-gray-300 text-primary-green focus:ring-primary-green">
+                                <label for="remember-me" class="ml-2 block text-sm text-gray-900">Remember me</label>
+                            </div>
+
+                            <div class="text-sm">
+                                <!-- Updated hover color for link to match new primary-green -->
+                                <a href="#"
+                                    class="font-medium text-primary-green hover:text-primary-green/80 transition duration-150">Forgot
+                                    your password?</a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button type="submit"
+                                class="flex w-full justify-center rounded-lg border border-transparent bg-primary-green py-2 px-4 text-sm font-semibold text-white shadow-lg hover:bg-primary-green/90 focus:outline-none focus:ring-2 focus:ring-primary-green focus:ring-offset-2 transition duration-150">
+                                Sign In
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-6 text-center text-sm">
+                        <p>
+                            Don't have an account?
+                            <!-- Updated hover color for link to match new primary-green -->
+                            <a href="#" onclick="switchView('signup'); return false;"
+                                class="font-medium text-primary-green hover:text-primary-green/80 transition duration-150">
+                                Create an account
+                            </a>
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Sign Up Form View (Initially hidden) - Transparency: bg-white/50, Blur: backdrop-blur-lg -->
+                <div id="signup-view"
+                    class="bg-white/50 backdrop-blur-lg py-8 px-4 shadow-2xl rounded-xl sm:px-10 form-card hidden">
+                    <form class="space-y-6" action="#" method="POST"
+                        onsubmit="event.preventDefault(); handleAuth('signup');">
+
+                        <div>
+                            <label for="signup-name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <div class="mt-1">
+                                <input id="signup-name" name="name" type="text" autocomplete="name" required=""
+                                    class="block w-full rounded-lg border border-gray-300 px-4 py-2 placeholder-gray-400 shadow-sm focus:border-primary-green focus:outline-none focus:ring-primary-green sm:text-sm transition duration-150">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="signup-email" class="block text-sm font-medium text-gray-700">Email
+                                address</label>
+                            <div class="mt-1">
+                                <input id="signup-email" name="email" type="email" autocomplete="email" required=""
+                                    class="block w-full rounded-lg border border-gray-300 px-4 py-2 placeholder-gray-400 shadow-sm focus:border-primary-green focus:outline-none focus:ring-primary-green sm:text-sm transition duration-150">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="signup-password"
+                                class="block text-sm font-medium text-gray-700">Password</label>
+                            <div class="mt-1">
+                                <input id="signup-password" name="password" type="password" autocomplete="new-password"
+                                    required=""
+                                    class="block w-full rounded-lg border border-gray-300 px-4 py-2 placeholder-gray-400 shadow-sm focus:border-primary-green focus:outline-none focus:ring-primary-green sm:text-sm transition duration-150">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="signup-confirm-password" class="block text-sm font-medium text-gray-700">Confirm
+                                Password</label>
+                            <div class="mt-1">
+                                <input id="signup-confirm-password" name="confirm-password" type="password"
+                                    autocomplete="new-password" required=""
+                                    class="block w-full rounded-lg border border-gray-300 px-4 py-2 placeholder-gray-400 shadow-sm focus:border-primary-green focus:outline-none focus:ring-primary-green sm:text-sm transition duration-150">
+                            </div>
+                        </div>
+
+                        <!-- NEW SECURITY CODE FIELD -->
+                        <div>
+                            <label for="signup-security-code" class="block text-sm font-medium text-gray-700">Security
+                                Code</label>
+                            <div class="mt-1">
+                                <input id="signup-security-code" name="security-code" type="text" required=""
+                                    class="block w-full rounded-lg border border-gray-300 px-4 py-2 placeholder-gray-400 shadow-sm focus:border-primary-green focus:outline-none focus:ring-primary-green sm:text-sm transition duration-150">
+                            </div>
+                        </div>
+                        <!-- END OF NEW FIELDS -->
+
+                        <div>
+                            <button type="submit"
+                                class="flex w-full justify-center rounded-lg border border-transparent bg-primary-green py-2 px-4 text-sm font-semibold text-white shadow-lg hover:bg-primary-green/90 focus:outline-none focus:ring-2 focus:ring-primary-green focus:ring-offset-2 transition duration-150">
+                                Register Account
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-6 text-center text-sm">
+                        <p>
+                            Already have an account?
+                            <!-- Updated hover color for link to match new primary-green -->
+                            <a href="#" onclick="switchView('login'); return false;"
+                                class="font-medium text-primary-green hover:text-primary-green/80 transition duration-150">
+                                Sign In
+                            </a>
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Message Box -->
+                <div id="message-box" class="mt-4 p-4 text-sm rounded-lg text-white bg-green-500 hidden" role="alert">
+                    This is a message box.
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // --- UTILITY FUNCTIONS ---
+
+        // DOM elements
+        const loginView = document.getElementById('login-view');
+        const signupView = document.getElementById('signup-view');
+        const formTitle = document.getElementById('form-title');
+        const messageBox = document.getElementById('message-box');
+
+        let currentView = 'login'; // Initial state
+
+        /**
+         * Shows a temporary message in the message box.
+         * @param {string} message - The message text.
+         * @param {string} type - 'success' or 'error'.
+         */
+        function showMessage(message, type = 'success') {
+            messageBox.textContent = message;
+            messageBox.classList.remove('hidden', 'bg-green-500', 'bg-red-500');
+
+            if (type === 'error') {
+                messageBox.classList.add('bg-red-500');
+            } else {
+                messageBox.classList.add('bg-green-500');
+            }
+
+            setTimeout(() => {
+                messageBox.classList.add('hidden');
+            }, 3000);
+        }
+
+        /**
+         * Switches between the login and signup views with a fading effect.
+         * @param {string} view - 'login' or 'signup'.
+         */
+        function switchView(view) {
+            if (currentView === view) return;
+
+            // Start fade out effect
+            loginView.style.opacity = 0;
+            signupView.style.opacity = 0;
+
+            setTimeout(() => {
+                // Hide current and show new view
+                if (view === 'signup') {
+                    loginView.classList.add('hidden');
+                    signupView.classList.remove('hidden');
+                    formTitle.textContent = "Create a new account";
+                    currentView = 'signup';
+                } else {
+                    signupView.classList.add('hidden');
+                    loginView.classList.remove('hidden');
+                    formTitle.textContent = "Sign in to your account";
+                    currentView = 'login';
+                }
+
+                // Start fade in effect
+                setTimeout(() => {
+                    if (view === 'signup') {
+                        signupView.style.opacity = 1;
+                    } else {
+                        loginView.style.opacity = 1;
+                    }
+                }, 10); // Small delay to trigger transition
+            }, 300); // Wait for fade out transition (0.3s)
+        }
+        window.switchView = switchView; // Expose to global scope for onclick attributes
+
+        /**
+         * Handles form submission simulation.
+         * @param {string} type - 'login' or 'signup'.
+         */
+        async function handleAuth(type) {
+            if (type === 'login') {
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+
+                if (!email || !password) {
+                    showMessage('Please enter both email and password.', 'error');
+                    return;
+                }
+
+                try {
+                    const params = new URLSearchParams();
+                    params.append('username', email);
+                    params.append('password', password);
+
+                    const response = await fetch('/token', {
+                        method: 'POST',
+                        body: params,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        localStorage.setItem('token', data.access_token);
+                        showMessage('Successfully signed in!', 'success');
+                        // Redirect to dashboard
+                        window.location.href = '/dashboard';
+                    } else {
+                        showMessage('Login failed', 'error');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showMessage('An error occurred during login', 'error');
+                }
+
+            } else if (type === 'signup') {
+                const name = document.getElementById('signup-name').value;
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                const confirmPassword = document.getElementById('signup-confirm-password').value;
+                const securityCode = document.getElementById('signup-security-code').value;
+
+                if (password !== confirmPassword) {
+                    showMessage('Passwords do not match.', 'error');
+                    return;
+                }
+
+                if (!securityCode) {
+                    showMessage('Please enter the Security Code.', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/signup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: name,
+                            email: email,
+                            password: password,
+                            security_code: securityCode
+                        })
+                    });
+
+                    if (response.ok) {
+                        showMessage('Account created successfully!', 'success');
+                        setTimeout(() => switchView('login'), 1500);
+                    } else {
+                        const errorData = await response.json();
+                        showMessage(errorData.detail || 'Signup failed', 'error');
+                    }
+                } catch (error) {
+                    console.error('Signup error:', error);
+                    showMessage('An error occurred during signup', 'error');
+                }
+            }
+        }
+        window.handleAuth = handleAuth; // Expose to global scope for onsubmit attributes
+    </script>
+</body>
+
+</html>

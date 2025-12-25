@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - TextExtract</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { 'primary-green': '#4A997A' },
+                    animation: {
+                        blob: "float 20s ease-in-out infinite both alternate",
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'none' },
+                            '50%': { transform: 'translate(50%, 20%) rotateY(10deg) scale(1.2)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        /* Smooth scrolling */
+        .smooth-scroll {
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+
+        .glass-header {
+            background-color: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-200 h-screen flex overflow-hidden relative">
+
+    <!-- Animated Background Globs -->
+    <div
+        class="absolute top-20 left-2 w-[500px] h-[500px] bg-[#B3C9C2] rounded-full mix-blend-multiply filter blur-[150px] opacity-50 animate-blob pointer-events-none">
+    </div>
+    <div
+        class="absolute top-20 right-32 w-[500px] h-[500px] bg-[#A3BFC9] rounded-full mix-blend-multiply filter blur-[150px] opacity-50 animate-blob animation-delay-2000 pointer-events-none">
+    </div>
+    <div
+        class="hidden xl:block absolute bottom-10 left-32 w-[500px] h-[500px] bg-[#809090] rounded-full mix-blend-multiply filter blur-[150px] opacity-50 animate-blob animation-delay-4000 pointer-events-none">
+    </div>
+    <div
+        class="absolute bottom-10 right-52 w-[500px] h-[500px] bg-[#A3BFC9] rounded-full mix-blend-multiply filter blur-[150px] opacity-50 animate-blob animation-delay-4000 pointer-events-none">
+    </div>
+
+    <!-- Modern Floating Sidebar -->
+    <aside class="hidden md:flex flex-col w-72 z-20 p-4">
+        <div class="h-full flex flex-col glass-panel rounded-2xl shadow-2xl">
+            <!-- Brand -->
+            <div class="h-20 flex items-center px-8 border-b border-white/10">
+                <div class="flex items-center space-x-3">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-primary-green to-teal-400 rounded-lg shadow flex items-center justify-center text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-800 tracking-tight">TextExtract</span>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 px-4 py-6 space-y-2">
+                <a href="/dashboard"
+                    class="flex items-center px-4 py-3 text-gray-600 hover:bg-white/30 hover:text-gray-800 rounded-xl transition-all border border-transparent hover:border-white/20 group">
+                    <svg class="w-5 h-5 mr-3 text-gray-400 group-hover:text-primary-green transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                        </path>
+                    </svg>
+                    <span class="font-medium">Documents</span>
+                </a>
+                <a href="#"
+                    class="flex items-center px-4 py-3 text-gray-800 bg-white/50 backdrop-blur-sm rounded-xl transition-all shadow-sm border border-white/40 group">
+                    <svg class="w-5 h-5 mr-3 text-primary-green transition-transform group-hover:scale-110" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span class="font-medium">Settings</span>
+                </a>
+            </nav>
+
+            <!-- Profile Info -->
+            <div class="px-4 pb-4">
+                <div class="glass-panel p-4 rounded-xl border border-white/30 bg-white/20">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <img id="sidebar-profile-img" src="https://ui-avatars.com/api/?name=User&background=random"
+                            alt="Profile" class="w-10 h-10 rounded-full shadow-md border-2 border-white/50" />
+                        <div>
+                            <div class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Welcome</div>
+                            <div id="sidebar-user-name" class="text-sm font-bold text-gray-800 truncate max-w-[120px]">
+                                Loading...</div>
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()"
+                        class="w-full py-2 text-xs font-bold text-white bg-red-400/80 hover:bg-red-500/90 rounded-lg shadow-sm transition-all flex items-center justify-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                            </path>
+                        </svg>
+                        <span>Sign Out</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative z-10">
+
+        <div class="h-16 md:h-24 flex items-center px-4 sm:px-6 lg:px-8 z-20 relative transition-all duration-300">
+            <!-- Mobile Toggle -->
+            <div class="absolute left-4 md:hidden z-30">
+                <button onclick="toggleMobileMenu()"
+                    class="text-gray-600 hover:text-gray-800 p-2 glass-panel rounded-lg active:scale-95 transition-transform">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Sidebar Overlay -->
+        <div id="mobile-sidebar" class="fixed inset-0 z-50 flex hidden" role="dialog" aria-modal="true">
+            <!-- Backdrop -->
+            <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity opacity-0" id="mobile-backdrop"
+                onclick="toggleMobileMenu()"></div>
+
+            <!-- Sidebar Panel -->
+            <div class="relative flex-1 flex flex-col max-w-xs w-full bg-white/80 backdrop-blur-xl border-r border-white/40 shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out"
+                id="mobile-panel">
+                <div class="absolute top-0 right-0 -mr-12 pt-2">
+                    <button onclick="toggleMobileMenu()"
+                        class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                        <span class="sr-only">Close sidebar</span>
+                        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
+                    <div class="flex-shrink-0 flex items-center px-4 mb-6">
+                        <div
+                            class="w-8 h-8 bg-gradient-to-br from-primary-green to-teal-400 rounded-lg shadow mr-3 flex items-center justify-center text-white">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <span class="text-xl font-bold text-gray-800">TextExtract</span>
+                    </div>
+                    <nav class="px-2 space-y-2">
+                        <a href="/dashboard"
+                            class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-4 py-3 text-base font-medium rounded-xl transition-colors">
+                            <svg class="mr-4 h-6 w-6 text-gray-400 group-hover:text-gray-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                </path>
+                            </svg>
+                            Documents
+                        </a>
+                        <a href="#"
+                            class="bg-primary-green/10 text-primary-green group flex items-center px-4 py-3 text-base font-medium rounded-xl border border-primary-green/20">
+                            <svg class="mr-4 h-6 w-6 text-primary-green" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                                </path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            Settings
+                        </a>
+                    </nav>
+                </div>
+                <div class="border-t border-gray-200/50 p-4">
+                    <button onclick="handleLogout()"
+                        class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-red-500 hover:bg-red-600">
+                        Sign Out
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Area -->
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 smooth-scroll">
+        <div class="max-w-2xl mx-auto pt-4 md:pt-0">
+            <div class="flex items-center mb-6 md:mb-8">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 tracking-tight pl-10 md:pl-0">Account Settings
+                </h1>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-5 md:p-8 backdrop-blur-xl">
+                <form id="settings-form" onsubmit="handleUpdate(event)">
+                    <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2 ml-1" for="username">
+                                Full Name
+                            </label>
+                            <input
+                                class="w-full px-4 py-3 rounded-lg bg-white/50 border border-white/40 focus:outline-none focus:ring-2 focus:ring-primary-green focus:border-transparent transition shadow-sm"
+                                id="username" type="text" placeholder="Your Name">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2 ml-1" for="email">
+                                Email Address
+                            </label>
+                            <input
+                                class="w-full px-4 py-3 rounded-lg bg-white/50 border border-white/40 focus:outline-none focus:ring-2 focus:ring-primary-green focus:border-transparent transition shadow-sm"
+                                id="email" type="email" placeholder="email@example.com">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2 ml-1" for="password">
+                                New Password <span class="text-gray-500 font-normal text-xs ml-1">(Leave blank to
+                                    keep current)</span>
+                            </label>
+                            <input
+                                class="w-full px-4 py-3 rounded-lg bg-white/50 border border-white/40 focus:outline-none focus:ring-2 focus:ring-primary-green focus:border-transparent transition shadow-sm"
+                                id="password" type="password" placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <div id="status-msg"
+                        class="mt-6 text-sm font-medium hidden p-3 rounded-lg bg-white/40 border border-white/20">
+                    </div>
+
+                    <div class="mt-8 flex items-center justify-end">
+                        <button
+                            class="bg-primary-green hover:bg-primary-green/90 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                            type="submit">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    </div>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div id="mobile-sidebar" class="fixed inset-0 z-50 flex hidden" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity opacity-0" id="mobile-backdrop"
+            onclick="toggleMobileMenu()"></div>
+        <div class="relative flex-1 flex flex-col max-w-xs w-full bg-white/80 backdrop-blur-xl border-r border-white/40 shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out"
+            id="mobile-panel">
+            <div class="absolute top-0 right-0 -mr-12 pt-2">
+                <button onclick="toggleMobileMenu()"
+                    class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                    <span class="sr-only">Close sidebar</span>
+                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
+                <div class="flex-shrink-0 flex items-center px-4 mb-6">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-primary-green to-teal-400 rounded-lg shadow mr-3 flex items-center justify-center text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-800">TextExtract</span>
+                </div>
+                <nav class="px-2 space-y-2">
+                    <a href="/dashboard"
+                        class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-4 py-3 text-base font-medium rounded-xl transition-colors">
+                        <svg class="mr-4 h-6 w-6 text-gray-400 group-hover:text-gray-500" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                            </path>
+                        </svg>
+                        Documents
+                    </a>
+                    <a href="#"
+                        class="bg-primary-green/10 text-primary-green group flex items-center px-4 py-3 text-base font-medium rounded-xl border border-primary-green/20">
+                        <svg class="mr-4 h-6 w-6 text-primary-green" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        Settings
+                    </a>
+                </nav>
+            </div>
+            <div class="border-t border-gray-200/50 p-4">
+                <button onclick="handleLogout()"
+                    class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-red-500 hover:bg-red-600">Sign
+                    Out</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "";
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = '/';
+
+
+
+
+
+
+        async function loadProfile() {
+            try {
+                const response = await fetch(`${API_URL}/users/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.status === 401) handleLogout();
+                if (!response.ok) throw new Error('Failed to load profile');
+
+                const user = await response.json();
+
+                // Form Fields
+                document.getElementById('username').value = user.username;
+                document.getElementById('email').value = user.email;
+
+                // Sidebar Profile Update
+                const sidebarName = document.getElementById('sidebar-user-name');
+                const sidebarImg = document.getElementById('sidebar-profile-img');
+
+                if (sidebarName) sidebarName.textContent = user.username;
+                if (sidebarImg) {
+                    const encodedName = encodeURIComponent(user.username);
+                    sidebarImg.src = `https://ui-avatars.com/api/?name=${encodedName}&background=random&color=fff`;
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function handleUpdate(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const statusMsg = document.getElementById('status-msg');
+
+            const payload = {};
+            if (username) payload.username = username;
+            if (email) payload.email = email;
+            if (password) payload.password = password;
+
+            try {
+                const response = await fetch(`${API_URL}/users/me`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const updatedUser = await response.json();
+
+                    // Update Sidebar immediately
+                    const sidebarName = document.getElementById('sidebar-user-name');
+                    const sidebarImg = document.getElementById('sidebar-profile-img');
+                    if (sidebarName) sidebarName.textContent = updatedUser.username;
+                    if (sidebarImg) {
+                        const encodedName = encodeURIComponent(updatedUser.username);
+                        sidebarImg.src = `https://ui-avatars.com/api/?name=${encodedName}&background=random&color=fff`;
+                    }
+
+                    statusMsg.textContent = "Profile updated successfully!";
+                    statusMsg.className = "mt-6 text-sm font-medium text-green-800 bg-green-100/50 block p-3 rounded-lg border border-green-200/50";
+                    document.getElementById('password').value = ""; // Clear password field
+                } else {
+                    const err = await response.json();
+                    throw new Error(err.detail || 'Update failed');
+                }
+            } catch (error) {
+                statusMsg.textContent = error.message;
+                statusMsg.className = "mt-6 text-sm font-medium text-red-800 bg-red-100/50 block p-3 rounded-lg border border-red-200/50";
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('token');
+            window.location.href = '/';
+        }
+
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('mobile-sidebar');
+            const backdrop = document.getElementById('mobile-backdrop');
+            const panel = document.getElementById('mobile-panel');
+
+            if (sidebar.classList.contains('hidden')) {
+                // Open
+                sidebar.classList.remove('hidden');
+                setTimeout(() => {
+                    backdrop.classList.remove('opacity-0');
+                    panel.classList.remove('-translate-x-full');
+                }, 10);
+            } else {
+                // Close
+                backdrop.classList.add('opacity-0');
+                panel.classList.add('-translate-x-full');
+                setTimeout(() => {
+                    sidebar.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        loadProfile();
+    </script>
+</body>
+
+</html>
