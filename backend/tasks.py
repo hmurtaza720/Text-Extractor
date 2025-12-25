@@ -7,9 +7,11 @@ import requests
 
 # CONFIGURATION: N8N Webhook URL
 # Replace this with your actual N8N Webhook URL (POST)
-# Example: "http://localhost:5678/webhook/process-document"
-N8N_WEBHOOK_URL = "https://interpretive-dwana-electromechanical.ngrok-free.dev/webhook/91860155-7198-4368-af12-fb0a311da427"
-APP_BASE_URL = "https://reprobative-beverlee-irrelative.ngrok-free.dev" # Updated to Ngrok URL
+N8N_WEBHOOK_URL = os.getenv("N8N_WEBHOOK_URL", "http://localhost:5678/webhook/process-document")
+
+# APP_BASE_URL is required for N8N to download the file from this server
+# In Hugging Face, it should be: https://hmurtaza720-text-extractor.hf.space
+APP_BASE_URL = os.getenv("APP_BASE_URL", "http://localhost:7860")
 
 # @celery_app.task(bind=True)
 def process_document_task(doc_id: int):
