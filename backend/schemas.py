@@ -1,3 +1,4 @@
+from typing import Optional, List
 from pydantic import BaseModel, EmailStr
 
 class UserCreate(BaseModel):
@@ -15,9 +16,9 @@ class UserResponse(BaseModel):
         from_attributes = True
 
 class UserUpdate(BaseModel):
-    username: str | None = None
-    email: str | None = None
-    password: str | None = None
+    username: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str
@@ -32,13 +33,12 @@ class DocumentResponse(BaseModel):
     upload_date: str
     status: str
     original_path: str
-    filename: str | None = None
-    filename: str | None = None
-    raw_text: str | None = None
-    corrected_html: str | None = None
+    filename: Optional[str] = None
+    raw_text: Optional[str] = None
+    corrected_html: Optional[str] = None
     
     # New: Tags
-    tags: list["TagResponse"] = []
+    tags: List["TagResponse"] = []
 
     class Config:
         from_attributes = True
